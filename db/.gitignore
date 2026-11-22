@@ -1,0 +1,4 @@
+# 本地数据库文件不进仓库；表结构见 schema.sql
+*.db
+*.db-journal
+*.sqlite3
