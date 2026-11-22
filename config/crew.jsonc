@@ -1,0 +1,69 @@
+{
+  // 流水线定义 — 8 步工单流转、守卫、派活与审批规则
+  // 拼法：LangGraph 流程骨架 + Agent-Autoloop 派活审批 + CrewAI 式岗位配置
+  // 复盘不是一个岗位：步骤一律以工单 stage 字段为准，不按“哪个岗在干活”推导。
+  "name": "mengyouxinsheng-workbench",
+  "version": "0.1.0",
+  "ceo": {
+    "id": "ceo",
+    "name": "蚕宝宝",
+    "role": "总管：派活、校验、汇总；不做专家活"
+  },
+  "stages": [
+    { "step": 1, "name": "选品", "post": "xuanpin" },
+    { "step": 2, "name": "编导", "post": "biandao" },
+    { "step": 3, "name": "拍摄", "post": "paishe" },
+    { "step": 4, "name": "剪辑", "post": "jianji" },
+    { "step": 5, "name": "分发", "post": "fenfa" },
+    { "step": 6, "name": "投放", "post": "toufang" },
+    { "step": 7, "name": "对帐", "post": "duizhang" },
+    { "step": 8, "name": "复盘", "post": "ceo" }
+  ],
+  "guards": [
+    {
+      "id": "roi-blocks-ads",
+      "rule": "ROI < 1.5 不得进入投放；已在投的立即停",
+      "check": "投放前校验 ROI；校验失败工单打回分发"
+    },
+    {
+      "id": "banword-blocks-shooting",
+      "rule": "脚本命中禁词或极限词不得进入拍摄",
+      "check": "编导完成后跑禁词检查；命中则打回编导"
+    },
+    {
+      "id": "pre-publish-review",
+      "rule": "发前审查未通过不得发布",
+      "check": "分发前强制人工审查（验脸验声留证据）；任何 Agent 不得自行放行"
+    },
+    {
+      "id": "commission-rate-floor",
+      "rule": "佣金率低于 20% 的商品不得进入“在推”",
+      "check": "选品通过前校验佣金率"
+    }
+  ],
+  "dispatch": {
+    "entry": "single",
+    "note": "单一派活入口：只有一个地方能决定谁干什么（CEO 派活；rules.json 是派活规则的落点）",
+    "lease": "认领制：先认领未分配工单再动手，他人持有时拒绝并返回过期时间",
+    "handoff": "显式交接：点名下一岗 + 上下文包 + checkpoint",
+    "completion": "凭证据完成：完成须附证据（检查结果、发布记录、对帐单），口头“通过”不算数",
+    "hop_fuse": 8,
+    "hop_fuse_note": "Agent 交回事件再派活层数累加，超过 8 层只记录、不再派活并通知人工"
+  },
+  "approvals": {
+    "required": [
+      "发前审查",
+      "花钱（投放预算、充值、付费调用）",
+      "改禁词表",
+      "改选品标准与评分权重",
+      "对外发布与对外发消息",
+      "删数据与批量改动"
+    ],
+    "channel": "桌面审批卡片为主；飞书卡片审批为可选模块"
+  },
+  "data_rules": [
+    "没接上真实数据的地方显示“暂无数据/示例”，不许用写死数字冒充",
+    "读不到的数留空，不写 0",
+    "状态落库：工单阶段字段是步骤推导的唯一依据"
+  ]
+}
