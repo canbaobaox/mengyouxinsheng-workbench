@@ -1,0 +1,9 @@
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/
+# Vite
+dist/
+# 本地数据库（表结构在 db/schema.sql，数据文件不进仓库）
+*.db
+*.db-journal
+*.sqlite3
