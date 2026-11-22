@@ -1,0 +1,8 @@
+/* M0 骨架：最小样式。M2 接入 Tailwind + shadcn/ui 后替换。 */
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+}
