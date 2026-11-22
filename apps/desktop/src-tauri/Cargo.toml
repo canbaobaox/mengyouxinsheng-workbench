@@ -1,0 +1,25 @@
+# 注意：本机（Linux 云电脑）没有 cargo，本文件为手写最小结构，未经 cargo check。
+# 在开发机上装 Rust stable 后跑 `cargo check` / `npm run tauri dev` 验证。
+[package]
+name = "mengyouxinsheng-workbench"
+version = "0.1.0"
+description = "抖音精选联盟一人公司 AI 工作台（Tauri 桌面壳）"
+authors = ["canbaobaox"]
+edition = "2021"
+
+[lib]
+name = "mengyouxinsheng_workbench_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+lto = true
+codegen-units = 1
