@@ -1,0 +1,1 @@
+{"$schema":"https://schema.tauri.app/config/2/capability","description":"默认能力：核心窗口 + SQLite","identifier":"default","permissions":["core:default","sql:default"],"windows":["main"]}
