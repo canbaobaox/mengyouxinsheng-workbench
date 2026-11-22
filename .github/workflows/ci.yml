@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  web:
+    name: lint + typecheck + build + schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # 注意：仓库首次提交 package-lock.json 之前用 npm install；
+      # 锁文件提交后请把下面这行换成 npm ci。
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build web
+        run: npm run build
+
+      - name: Validate SQLite schema
+        run: python3 -c "import sqlite3; sqlite3.connect(':memory:').executescript(open('db/schema.sql', encoding='utf-8').read()); print('schema.sql OK')"
+
+  desktop:
+    name: rust sidecar check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      # 只做 cargo check（不链接），验证 Rust 壳能编译；打包走 release 流程。
+      - name: Check Rust sidecar compiles
+        run: cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml
